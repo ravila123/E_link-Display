@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Paper Display Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+        
+        .status-bar {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .status-item {
+            text-align: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .status-item h3 {
+            color: #667eea;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        
+        .status-item p {
+            color: #333;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+        
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .card h2 {
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            color: #555;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .form-group small {
+            display: block;
+            color: #888;
+            margin-top: 5px;
+            font-size: 0.9em;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-success {
+            background: #48bb78;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #38a169;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(72, 187, 120, 0.4);
+        }
+        
+        .btn-danger {
+            background: #f56565;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #e53e3e;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(245, 101, 101, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #718096;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #4a5568;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .alert-success {
+            background: #c6f6d5;
+            color: #22543d;
+            border: 1px solid #9ae6b4;
+        }
+        
+        .alert-error {
+            background: #fed7d7;
+            color: #742a2a;
+            border: 1px solid #fc8181;
+        }
+        
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        
+        #logs {
+            background: #1a202c;
+            color: #48bb78;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .status-bar {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>📺 E-Paper Display Manager</h1>
+            <p>Configure your Waveshare display with Todoist integration</p>
+        </div>
+        
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <div class="status-item">
+                <h3>Last Update</h3>
+                <p>{{ status.last_update }}</p>
+            </div>
+            <div class="status-item">
+                <h3>Cache Files</h3>
+                <p>{{ status.cache_files|length }} files</p>
+            </div>
+            <div class="status-item">
+                <h3>Log Size</h3>
+                <p>{{ (status.log_size / 1024)|round(2) }} KB</p>
+            </div>
+        </div>
+        
+        <!-- Alert Messages -->
+        <div id="alert-success" class="alert alert-success"></div>
+        <div id="alert-error" class="alert alert-error"></div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Configuration Form -->
+            <div class="card">
+                <h2>⚙️ Configuration</h2>
+                
+                <form id="config-form">
+                    <!-- Todoist Section -->
+                    <div class="section">
+                        <h3>📋 Todoist Integration</h3>
+                        <div class="form-group">
+                            <label for="TODOIST_API_TOKEN">Todoist API Token</label>
+                            <input type="text" id="TODOIST_API_TOKEN" name="TODOIST_API_TOKEN" 
+                                   value="{{ config.get('TODOIST_API_TOKEN', '') }}" 
+                                   placeholder="Get from https://todoist.com/prefs/integrations">
+                            <small>Your Todoist API token for fetching tasks</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Weather Section -->
+                    <div class="section">
+                        <h3>🌤️ Weather Configuration</h3>
+                        <div class="form-group">
+                            <label for="METNO_SELF_IDENTIFICATION">Met.no Email (Free)</label>
+                            <input type="email" id="METNO_SELF_IDENTIFICATION" name="METNO_SELF_IDENTIFICATION" 
+                                   value="{{ config.get('METNO_SELF_IDENTIFICATION', '') }}" 
+                                   placeholder="your@email.com">
+                            <small>Free weather provider - just needs your email</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="WEATHER_LATITUDE">Latitude</label>
+                            <input type="text" id="WEATHER_LATITUDE" name="WEATHER_LATITUDE" 
+                                   value="{{ config.get('WEATHER_LATITUDE', '51.5077') }}" 
+                                   placeholder="51.5077">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="WEATHER_LONGITUDE">Longitude</label>
+                            <input type="text" id="WEATHER_LONGITUDE" name="WEATHER_LONGITUDE" 
+                                   value="{{ config.get('WEATHER_LONGITUDE', '-0.1277') }}" 
+                                   placeholder="-0.1277">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="WEATHER_FORMAT">Temperature Format</label>
+                            <select id="WEATHER_FORMAT" name="WEATHER_FORMAT">
+                                <option value="CELSIUS" {% if config.get('WEATHER_FORMAT') == 'CELSIUS' %}selected{% endif %}>Celsius (°C)</option>
+                                <option value="FAHRENHEIT" {% if config.get('WEATHER_FORMAT') == 'FAHRENHEIT' %}selected{% endif %}>Fahrenheit (°F)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Display Section -->
+                    <div class="section">
+                        <h3>🖥️ Display Settings</h3>
+                        <div class="form-group">
+                            <label for="WAVESHARE_EPD75_VERSION">Waveshare Version</label>
+                            <select id="WAVESHARE_EPD75_VERSION" name="WAVESHARE_EPD75_VERSION">
+                                <option value="1" {% if config.get('WAVESHARE_EPD75_VERSION') == '1' %}selected{% endif %}>Version 1 (640x384)</option>
+                                <option value="2" {% if config.get('WAVESHARE_EPD75_VERSION') == '2' %}selected{% endif %}>Version 2 (800x480)</option>
+                                <option value="2B" {% if config.get('WAVESHARE_EPD75_VERSION') == '2B' %}selected{% endif %}>Version 2B (Red/Black/White)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="SCREEN_LAYOUT">Screen Layout</label>
+                            <select id="SCREEN_LAYOUT" name="SCREEN_LAYOUT">
+                                <option value="1" {% if config.get('SCREEN_LAYOUT') == '1' %}selected{% endif %}>Layout 1 (Default)</option>
+                                <option value="2" {% if config.get('SCREEN_LAYOUT') == '2' %}selected{% endif %}>Layout 2 (More calendar)</option>
+                                <option value="3" {% if config.get('SCREEN_LAYOUT') == '3' %}selected{% endif %}>Layout 3 (Calendar left)</option>
+                                <option value="4" {% if config.get('SCREEN_LAYOUT') == '4' %}selected{% endif %}>Layout 4 (Color)</option>
+                                <option value="5" {% if config.get('SCREEN_LAYOUT') == '5' %}selected{% endif %}>Layout 5 (With month)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Advanced Section -->
+                    <div class="section">
+                        <h3>🔧 Advanced Settings</h3>
+                        <div class="form-group">
+                            <label for="CALENDAR_TTL">Cache Duration (seconds)</label>
+                            <input type="number" id="CALENDAR_TTL" name="CALENDAR_TTL" 
+                                   value="{{ config.get('CALENDAR_TTL', '3600') }}" 
+                                   placeholder="3600">
+                            <small>How long to cache data (3600 = 1 hour)</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="LOG_LEVEL">Log Level</label>
+                            <select id="LOG_LEVEL" name="LOG_LEVEL">
+                                <option value="DEBUG" {% if config.get('LOG_LEVEL') == 'DEBUG' %}selected{% endif %}>DEBUG</option>
+                                <option value="INFO" {% if config.get('LOG_LEVEL') == 'INFO' %}selected{% endif %}>INFO</option>
+                                <option value="WARNING" {% if config.get('LOG_LEVEL') == 'WARNING' %}selected{% endif %}>WARNING</option>
+                                <option value="ERROR" {% if config.get('LOG_LEVEL') == 'ERROR' %}selected{% endif %}>ERROR</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">💾 Save Configuration</button>
+                </form>
+            </div>
+            
+            <!-- Actions Panel -->
+            <div>
+                <div class="card">
+                    <h2>🎮 Actions</h2>
+                    <div class="actions">
+                        <button onclick="updateDisplay()" class="btn btn-success">🔄 Update Display Now</button>
+                        <button onclick="clearCache()" class="btn btn-danger">🗑️ Clear Cache</button>
+                        <button onclick="viewLogs()" class="btn btn-secondary">📄 View Logs</button>
+                    </div>
+                </div>
+                
+                <div class="card" style="margin-top: 20px;">
+                    <h2>📊 System Logs</h2>
+                    <div id="logs">Click "View Logs" to load recent logs...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Save configuration
+        document.getElementById('config-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            
+            try {
+                const response = await fetch('/save', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    showAlert('success', data.message);
+                } else {
+                    showAlert('error', data.message);
+                }
+            } catch (error) {
+                showAlert('error', 'Failed to save configuration: ' + error);
+            }
+        });
+        
+        // Update display
+        async function updateDisplay() {
+            const btn = event.target;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span> Updating...';
+            
+            try {
+                const response = await fetch('/update', { method: 'POST' });
+                const data = await response.json();
+                
+                if (data.success) {
+                    showAlert('success', 'Display updated successfully!');
+                    document.getElementById('logs').textContent = data.output;
+                } else {
+                    showAlert('error', 'Update failed: ' + (data.error || data.message));
+                    document.getElementById('logs').textContent = data.error || data.message;
+                }
+            } catch (error) {
+                showAlert('error', 'Failed to update display: ' + error);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '🔄 Update Display Now';
+            }
+        }
+        
+        // Clear cache
+        async function clearCache() {
+            if (!confirm('Are you sure you want to clear all cache files?')) return;
+            
+            try {
+                const response = await fetch('/clear-cache', { method: 'POST' });
+                const data = await response.json();
+                
+                if (data.success) {
+                    showAlert('success', 'Cache cleared: ' + data.removed.join(', '));
+                } else {
+                    showAlert('error', 'Failed to clear cache: ' + data.message);
+                }
+            } catch (error) {
+                showAlert('error', 'Failed to clear cache: ' + error);
+            }
+        }
+        
+        // View logs
+        async function viewLogs() {
+            try {
+                const response = await fetch('/logs');
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('logs').textContent = data.logs;
+                } else {
+                    document.getElementById('logs').textContent = 'Error: ' + data.message;
+                }
+            } catch (error) {
+                document.getElementById('logs').textContent = 'Failed to load logs: ' + error;
+            }
+        }
+        
+        // Show alert
+        function showAlert(type, message) {
+            const alertId = type === 'success' ? 'alert-success' : 'alert-error';
+            const alert = document.getElementById(alertId);
+            alert.textContent = message;
+            alert.style.display = 'block';
+            
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" height="480" width="800" version="1.1">
+    <!-- E-Paper white background -->
+    <rect width="800" height="480" fill="#F5F5F0" />
+    
+    <!-- Simulate e-paper texture with subtle noise -->
+    <filter id="paper-texture">
+        <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" result="noise"/>
+        <feColorMatrix in="noise" type="saturate" values="0"/>
+        <feComponentTransfer>
+            <feFuncA type="discrete" tableValues="0 0 0 0 0 0.02"/>
+        </feComponentTransfer>
+        <feBlend in="SourceGraphic" in2="noise" mode="multiply"/>
+    </filter>
+    
+    <g filter="url(#paper-texture)">
+        
+        <!-- ========== TIME (Top Left) ========== -->
+        <text x="20" y="120" style="font-weight:bold;font-size:100px;font-family:sans-serif;fill:#000000;">
+            10:30 AM
+        </text>
+        
+        <!-- ========== DATE (Top Right) ========== -->
+        <text x="600" y="75" style="text-anchor:middle;font-weight:600;font-size:47px;font-family:sans-serif;fill:#000000;">
+            Monday
+        </text>
+        
+        <text x="600" y="130" style="text-anchor:middle;font-size:40px;font-family:sans-serif;fill:#000000;">
+            Nov 11, 2025
+        </text>
+        
+        <!-- ========== WEATHER SECTION (Left) ========== -->
+        
+        <!-- Weather Icon - Simple Sun -->
+        <g transform="translate(155, 250)">
+            <circle cx="0" cy="0" r="50" fill="none" stroke="#000000" stroke-width="4"/>
+            <circle cx="0" cy="0" r="35" fill="#000000"/>
+            <!-- Sun rays -->
+            <g stroke="#000000" stroke-width="5" stroke-linecap="round">
+                <line x1="0" y1="-70" x2="0" y2="-55"/>
+                <line x1="0" y1="55" x2="0" y2="70"/>
+                <line x1="-70" y1="0" x2="-55" y2="0"/>
+                <line x1="55" y1="0" x2="70" y2="0"/>
+                <line x1="-50" y1="-50" x2="-40" y2="-40"/>
+                <line x1="40" y1="40" x2="50" y2="50"/>
+                <line x1="50" y1="-50" x2="40" y2="-40"/>
+                <line x1="-40" y1="40" x2="-50" y2="50"/>
+            </g>
+        </g>
+        
+        <!-- Temperature -->
+        <text x="155" y="360" style="font-size:38px;font-family:sans-serif;text-anchor:middle;fill:#000000;">
+            20°C/15°C
+        </text>
+        
+        <!-- Weather Description -->
+        <text x="155" y="390" style="font-size:28px;font-family:sans-serif;text-anchor:middle;fill:#000000;">
+            Partly Cloudy
+        </text>
+        
+        <!-- ========== VERTICAL DIVIDER ========== -->
+        <rect x="301" y="160" width="3" height="305" fill="#000000"/>
+        
+        <!-- ========== CALENDAR/TASKS SECTION (Right) ========== -->
+        
+        <!-- Calendar Icon -->
+        <g transform="translate(330, 180)">
+            <rect x="0" y="0" width="35" height="35" fill="none" stroke="#000000" stroke-width="2.5" rx="3"/>
+            <rect x="0" y="0" width="35" height="12" fill="#000000"/>
+            <line x1="8" y1="0" x2="8" y2="-5" stroke="#000000" stroke-width="2.5"/>
+            <line x1="27" y1="0" x2="27" y2="-5" stroke="#000000" stroke-width="2.5"/>
+        </g>
+        
+        <!-- Task 1 -->
+        <text x="330" y="238" style="font-size:29px;font-family:sans-serif;fill:#000000;">
+            <tspan x="330" dy="0" style="font-size:25px;">Saturday</tspan>
+            <tspan x="330" dy="25" style="font-weight:bold;">278 examples and simulation using MKL46Z</tspan>
+        </text>
+        
+        <!-- Task 2 -->
+        <text x="330" y="298" style="font-size:29px;font-family:sans-serif;fill:#000000;">
+            <tspan x="330" dy="0" style="font-size:25px;">Sunday</tspan>
+            <tspan x="330" dy="25" style="font-weight:bold;">More kinetics examples</tspan>
+        </text>
+        
+        <!-- Task 3 -->
+        <text x="330" y="358" style="font-size:29px;font-family:sans-serif;fill:#000000;">
+            <tspan x="330" dy="0" style="font-size:25px;">Tuesday 2:45 AM</tspan>
+            <tspan x="330" dy="25" style="font-weight:bold;">Attorney appointment</tspan>
+        </text>
+        
+        <!-- Task 4 -->
+        <text x="330" y="418" style="font-size:29px;font-family:sans-serif;fill:#000000;">
+            <tspan x="330" dy="0" style="font-size:25px;">Today</tspan>
+            <tspan x="330" dy="25" style="font-weight:bold;">Welcome to Todoist 👋 Let's get you...</tspan>
+        </text>
+        
+    </g>
+    
+    <!-- Device frame to show it's an e-paper display -->
+    <rect x="0" y="0" width="800" height="480" fill="none" stroke="#333333" stroke-width="8" rx="10"/>
+    
+    <!-- Label -->
+    <text x="400" y="15" style="text-anchor:middle;font-size:11px;font-family:monospace;fill:#666666;">
+        Waveshare 7.5" E-Paper Display (800x480) - Todoist Integration
+    </text>
+    
+</svg>

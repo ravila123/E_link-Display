@@ -1,421 +1,487 @@
-Instructions on setting up a Raspberry Pi Zero WH with a Waveshare ePaper 7.5 Inch HAT.
-The screen will display date, time, weather icon with high and low, and calendar entries.
+# Waveshare ePaper Display
 
-![Default Layout](screenshots/display.png)![Private Mode](screenshots/pvt_literature_irl.png)  
+A feature-rich dashboard for Raspberry Pi with Waveshare 7.5" ePaper display. Shows weather, calendar events, tasks, and more on a beautiful e-ink screen.
 
-- [Shopping list](#shopping-list)
-- [Setup the PI](#setup-the-pi)
-- [Using this application](#using-this-application)
-- [Setup dependencies](#setup-dependencies)
-- [Set your location](#set-your-location)
-- [Pick a Weather provider](#pick-a-weather-provider)
-  - [OpenWeatherMap](#openweathermap)
-  - [Met Office (UK)](#met-office-uk)
-  - [AccuWeather](#accuweather)
-  - [Met.no](#metno)
-  - [Met Éireann (Ireland)](#met-éireann-ireland)
-  - [Weather.gov (US)](#weathergov-us)
-  - [Climacell (tomorrow.io)](#climacell-tomorrowio)
-  - [VisualCrossing](#visualcrossing)
-  - [SMHI (Sweden)](#smhi-sweden)
-- [Pick a severe weather warning provider](#pick-a-severe-weather-warning-provider)
-  - [Met Office (UK)](#met-office-uk-1)
-  - [Weather.gov (US)](#weathergov-us-1)
-  - [Met Éireann (Ireland)](#met-éireann-ireland-1)
-- [Pick a Calendar provider](#pick-a-calendar-provider)
-  - [Google Calendar](#google-calendar)
-  - [Outlook Calendar](#outlook-calendar)
-  - [ICS Calendar](#ics-calendar)
-  - [CalDav Calendar](#caldav-calendar)
-- [Pick a layout](#pick-a-layout)
-- [Run it](#run-it)
-  - [Automate it](#automate-it)
-- [Adding custom data](#custom-data)
-- [Choosing a different language](#how-to-use-a-different-display-language)
-- [Choosing a different font](#how-to-use-a-different-font)
-- [Privacy Mode](#privacy-mode)
+
+## Features
+
+- Multiple weather providers (OpenWeatherMap, Met Office, AccuWeather, and more)
+- Calendar integration (Google, Outlook, Todoist, ICS, CalDav)
+- Task management with Todoist
+- Web interface for easy configuration
+- Multiple layout options
+- Privacy modes (XKCD comics, literature clock)
+- Severe weather alerts
+- Multi-language support
+- Customizable fonts and data  
+
+## Table of Contents
+
+- [Shopping List](#shopping-list)
+- [Quick Start](#quick-start)
+- [Setup](#setup)
+  - [Prepare the Pi](#prepare-the-pi)
+  - [Connect the Display](#connect-the-display)
+  - [Clone and Install](#clone-and-install)
+- [Configuration](#configuration)
+  - [Web Interface (Recommended)](#web-interface-recommended)
+  - [Manual Configuration](#manual-configuration)
+  - [Weather Providers](#weather-providers)
+  - [Calendar Providers](#calendar-providers)
+  - [Display Options](#display-options)
+- [Running](#running)
+  - [Manual Run](#manual-run)
+  - [Automation](#automation)
+- [Advanced Features](#advanced-features)
+  - [Custom Data](#custom-data)
+  - [Language Support](#language-support)
+  - [Custom Fonts](#custom-fonts)
+  - [Privacy Mode](#privacy-mode)
 - [Troubleshooting](#troubleshooting)
-- [Waveshare documentation and sample code](#waveshare-documentation-and-sample-code)
-- [Debugging locally](#debugging-locally)
+- [Development](#development)
 
 
-## Shopping list
+## Shopping List
 
-[Waveshare 7.5 inch epaper display HAT 640x384](https://www.amazon.co.uk/gp/product/B075R4QY3L/)  
-[Raspberry Pi Zero WH (presoldered header)](https://www.amazon.co.uk/gp/product/B07BHMRTTY/)  
-[microSDHC card](https://www.amazon.co.uk/gp/product/B073K14CVB)  
+- [Waveshare 7.5" ePaper Display HAT](https://www.waveshare.com/product/displays/e-paper/epaper-1/7.5inch-e-paper-hat.htm) (640x384)
+- Raspberry Pi Zero WH (or any Raspberry Pi with GPIO)
+- microSD card (16GB or larger recommended)
+- Optional: Picture frame (7x5 inch / 18x13cm)
 
-Optional - a picture frame. I used a [18x13cm (7x5 inch) frame](https://www.tescophoto.com/harriet-photo-frame) which just about fits the screen.
+## Quick Start
 
-## Setup the PI
+Want to get started fast? Use the web interface:
+
+1. Follow the [Setup](#setup) instructions below
+2. Start the web interface: `.venv/bin/python3 web_interface.py`
+3. Open http://raspberrypi.local:5000 in your browser
+4. Configure everything through the friendly web UI
+
+See [WEB_INTERFACE_GUIDE.md](WEB_INTERFACE_GUIDE.md) for detailed instructions.
+
+## Setup
 
 ### Prepare the Pi
 
-Use the [Raspberry Pi imager](https://www.raspberrypi.com/software/) and install Raspberry Pi OS (tested with Raspberry Pi OS Lite, October 2023 edition).   
-
-Ensure that you have SSH access, or direct access, to the Raspberry Pi, and that it can connect to the Internet to download packages. In most cases you would do this via the imager's settings screen: set the username and password, enable SSH and set up WiFi access. 
-
-
-### Connect the display
-
-Turn the Pi off, then put the HAT on top of the Pi's GPIO pins.
-
-Connect the ribbon from the epaper display to the extension.  To do this you will need to lift the black latch at the back of the connector, insert the ribbon slowly, then push the latch down.  
-
-Now turn the Pi back on and SSH into it.  
-
-
-## Using this application
-
-### Clone it
-
-git clone this repository in the `/home/pi` directory.
-
-    cd ~
-    sudo apt update && sudo apt upgrade
-    sudo apt install git
-    git clone --recursive https://github.com/mendhak/waveshare-epaper-display.git
-
-This should create a `/home/pi/waveshare-epaper-display` directory.
-
-### Setup dependencies
-
-    cd waveshare-epaper-display
-    sudo apt install gsfonts fonts-noto python3 python3-pip pigpio libopenjp2-7 python3-venv libjpeg-dev libxslt1-dev fontconfig libcairo2
-    python3 -m venv --system-site-packages .venv
-    .venv/bin/pip3 install -r requirements.txt
-    sudo raspi-config nonint do_spi 0  #This enables SPI
-    sudo reboot
-
-
-### Waveshare version
-
-Copy `env.sh.sample` (example environment variables) to `env.sh`
-
-Modify the `env.sh` file and set the version of your Waveshare 7.5" e-Paper Module  (newer ones are version 2, red one is 2B)
-
-    export WAVESHARE_EPD75_VERSION=2
-
-## Set your location
-
-Whichever weather provider you use, you'll need to provide the location and units to display in.
-
-Modify the `env.sh` file and update with the latitude and longitude of your location.
-As needed, change the temperature format (CELSIUS or FAHRENHEIT).
-
-    export WEATHER_LATITUDE=51.3656
-    export WEATHER_LONGITUDE=0.1963
-    export WEATHER_FORMAT=CELSIUS
-
-## Pick a Weather provider
-
-You can pick between OpenWeatherMap, Met Office, AccuWeather, Met.no, Weeather.gov, VisualCrossing, and Climacell to provide temperature and weather forecasts.
-You can switch between them too, by providing the keys and commenting out other ones, but remember to delete the `cache_weather.json` if you switch weather providers.
-
-### OpenWeatherMap
-
-Register on the [OpenWeathermap](https://openweathermap.org) website, and go to the [API Keys page](https://home.openweathermap.org/api_keys), that's the key you'll need.
-Add it to the env.sh file.
-
-    export OPENWEATHERMAP_APIKEY=xxxxxx
-
-### Met Office (UK)
-
-Create an account [on the Met Office Weather DataHub](https://datahub.metoffice.gov.uk) site.
-Next, [under subscriptions](https://datahub.metoffice.gov.uk/profile/subscriptions) - subscribe to the 'Site Specific' product 'Global Spot'. This will get you an API key. 
-
-Add the API key to the env.sh file:
-
-    export METOFFICEDATAHUB_API_KEY=eyJ.........
-
-### AccuWeather
-
-Register on the [AccuWeather](https://developer.accuweather.com/) site.
-Next, [register a new application](https://developer.accuweather.com/user/me/apps).
-I just named it Personal, marked it as Limited Trial, Internal App, Business to Consumer.
-Once you do this you'll get an API Key, save it.
-
-You'll also need an AccuWeather Location Key.
-Do a normal [AccuWeather search](https://www.accuweather.com/) for your location.
-The last number in the URL is the Location Key.  In the example of [London](https://www.accuweather.com/en/gb/london/ec4a-2/weather-forecast/328328), it's `328328`.
-
-Add the API Key and Location Key to the `env.sh`.
-
-    export ACCUWEATHER_APIKEY=xxxxxx
-    export ACCUWEATHER_LOCATIONKEY=328328
-
-### Met.no
-
-Met.no's [Terms of Service](https://api.met.no/doc/TermsOfService) requires you to identify yourself.  The purpose is to ensure they can contact you in case you overload or abuse their servers.  For this reason, you just need to set your email address in `env.sh` like so:
-
-    export METNO_SELF_IDENTIFICATION=you@example.com
-
-Note that the Met.no API provides 6 hours of forecast, rather than a full day.
-
-### Met Éireann (Ireland)
-
-[Met Éireann](https://www.met.ie/) publish their forecast data under a [Creative Commons Attribution 4.0 International license (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/).  All you need to do to use it is to uncomment this line in `env.sh`:
-
-    export WEATHER_MET_EIREANN=1
-
-Note that a condition of use of this data is that weather alerts be displayed, so ALERT_MET_EIREANN_FEED_URL should be uncommented, too.
-
-### Weather.gov (US)
-
-Weather.gov requires you to [identify your application](https://www.weather.gov/documentation/services-web-api).  This can be any made up string, or an email address.
-Set its value in the `env.sh` as shown:
-
-    export WEATHERGOV_SELF_IDENTIFICATION=you@example.com
-
-Warning: YMMV. During my testing, I found the weather.gov API would start returning errors and then suddenly work again.
-
-### Climacell (tomorrow.io)
-
-Register on the [Climacell site](https://www.climacell.co/weather-api/), and when you do you should be given an API Key.
-Modify the `env.sh` file and put your Climacell API key in there.
-
-    export CLIMACELL_APIKEY=xxxxxx
-
-### VisualCrossing
-
-Register on [VisualCrossing](https://www.visualcrossing.com/). Under Account Details, you should be able to generate an API key. Once you have that, simply add it to `env.sh` as shown:
-
-    export VISUALCROSSING_APIKEY=XXXXXXXXXXXXXXXXXXXXXX
-
-### SMHI (Sweden)
-
-SMHI requires you to identify yourself.  Just set your own email,
-
-    export SMHI_SELF_IDENTIFICATION=you@example.com
-
-## Pick a severe weather warning provider
-
-This is an optional step.  By doing nothing you simply won't see severe weather warnings.
-
-### Met Office (UK)
-
-Go to the [Met Office RSS Feeds page](https://www.metoffice.gov.uk/weather/guides/rss) and copy the URL of the RSS feed based on your region.
-Set its value in the `env.sh` as shown below. For example, London would be:
-
-    export ALERT_METOFFICE_FEED_URL=https://www.metoffice.gov.uk/public/data/PWSCache/WarningsRSS/Region/se
-
-### Weather.gov (US)
-
-Weather.gov requires you to [identify your application](https://www.weather.gov/documentation/services-web-api).  This can be any made up string, or an email address.
-Set its value in the `env.sh` as shown:
-
-    export ALERT_WEATHERGOV_SELF_IDENTIFICATION=you@example.com
-
-This provider will use the same latitude and longitude as specified for the weather provider.
-
-Warning: YMMV. During my testing, I found the weather.gov API would start returning errors and then suddenly work again.
-
-### Met Éireann (Ireland)
-
-To use alerts from Met Éireann, visit  https://www.met.ie/Open_Data/json/ and choose the appropriate "warning_EIXX" JSON file for your region, using each county's FIPS code.  This code can be found in the table on http://www.statoids.com/uie.html,
-in the pre-2014 section.  For example, this is the file for Dublin:
-
-    export ALERT_MET_EIREANN_FEED_URL=https://www.met.ie/Open_Data/json/warning_EI07.json
-
-## Pick a Calendar provider
-
-You can use Todoist, Google Calendar, Outlook Calendar, ICS, or CalDav to display events.
-
-### Todoist
-
-Todoist is a popular task management app. To use it with this display:
-
-1. Go to [Todoist Settings > Integrations](https://todoist.com/prefs/integrations)
-2. Scroll down to "API token" and copy your token
-3. Add it to `env.sh`:
+1. Use the [Raspberry Pi Imager](https://www.raspberrypi.com/software/) to install Raspberry Pi OS
+2. In the imager settings:
+   - Set username and password
+   - Enable SSH
+   - Configure WiFi
+3. Boot the Pi and ensure it has internet access
+
+### Connect the Display
+
+1. Power off the Pi
+2. Attach the HAT to the GPIO pins
+3. Connect the ribbon cable (lift black latch, insert ribbon, push latch down)
+4. Power on and SSH into the Pi
+
+### Clone and Install
 
 ```bash
-export TODOIST_API_TOKEN=your_api_token_here
+cd ~
+sudo apt update && sudo apt upgrade
+sudo apt install git
+git clone --recursive https://github.com/mendhak/waveshare-epaper-display.git
+cd waveshare-epaper-display
+
+# Install dependencies
+sudo apt install gsfonts fonts-noto python3 python3-pip pigpio libopenjp2-7 \
+                 python3-venv libjpeg-dev libxslt1-dev fontconfig libcairo2
+
+# Create virtual environment
+python3 -m venv --system-site-packages .venv
+.venv/bin/pip3 install -r requirements.txt
+
+# Enable SPI
+sudo raspi-config nonint do_spi 0
+sudo reboot
 ```
 
-The display will show your tasks with:
-- 🔴 for P1 (urgent) tasks
-- 🟡 for P2 (high priority) tasks  
-- 🔵 for P3 (medium priority) tasks
-- Tasks are sorted by due date
-- Tasks without due dates will appear as today's tasks
+## Configuration
 
-### Google Calendar
+### Web Interface (Recommended)
 
-The script will by default get its info from your primary Google Calendar.  If you need to pick a specific calendar you will need its ID.  To get its ID, open up [Google Calendar](https://calendar.google.com) and go to the settings for your preferred calendar.  Under the 'Integrate Calendar' section you will see a Calendar ID which looks like `xyz12345@group.calendar.google.com`.  Set that value in `env.sh`
+The easiest way to configure your display:
+
+```bash
+# Install web interface dependencies
+.venv/bin/pip3 install -r requirements-web.txt
+
+# Start the web server
+.venv/bin/python3 web_interface.py
+```
+
+Then open http://raspberrypi.local:5000 in your browser and configure everything visually.
+
+See [WEB_INTERFACE_GUIDE.md](WEB_INTERFACE_GUIDE.md) for complete documentation.
+
+### Manual Configuration
+
+Copy the sample environment file:
+
+```bash
+cp env.sh.sample env.sh
+nano env.sh
+```
+
+#### Basic Settings
+
+Set your Waveshare display version (1, 2, or 2B):
+
+```bash
+export WAVESHARE_EPD75_VERSION=2
+```
+
+Set your location and temperature format:
+
+```bash
+export WEATHER_LATITUDE=51.3656
+export WEATHER_LONGITUDE=0.1963
+export WEATHER_FORMAT=CELSIUS  # or FAHRENHEIT
+```
+
+### Weather Providers
+
+Choose one weather provider:
+
+
+
+#### OpenWeatherMap
+
+1. Register at [OpenWeatherMap](https://openweathermap.org)
+2. Get your API key from the [API Keys page](https://home.openweathermap.org/api_keys)
+3. Add to env.sh:
+
+```bash
+export OPENWEATHERMAP_APIKEY=your_api_key
+```
+
+#### Met Office (UK)
+
+1. Create account at [Met Office DataHub](https://datahub.metoffice.gov.uk)
+2. Subscribe to 'Global Spot' under [subscriptions](https://datahub.metoffice.gov.uk/profile/subscriptions)
+3. Add to env.sh:
+
+```bash
+export METOFFICEDATAHUB_API_KEY=your_api_key
+```
+
+#### AccuWeather
+
+1. Register at [AccuWeather Developer](https://developer.accuweather.com/)
+2. [Create an application](https://developer.accuweather.com/user/me/apps)
+3. Get your Location Key from [AccuWeather search](https://www.accuweather.com/) (last number in URL)
+4. Add to env.sh:
+
+```bash
+export ACCUWEATHER_APIKEY=your_api_key
+export ACCUWEATHER_LOCATIONKEY=328328
+```
+
+#### Met.no (Norway)
+
+Free service, just requires identification:
+
+```bash
+export METNO_SELF_IDENTIFICATION=you@example.com
+```
+
+Note: Provides 6-hour forecasts instead of full day.
+
+#### Met Éireann (Ireland)
+
+Free service under CC BY 4.0 license:
+
+```bash
+export WEATHER_MET_EIREANN=1
+```
+
+Note: Weather alerts must also be enabled (see alert providers below).
+
+#### Weather.gov (US)
+
+Free service, requires identification:
+
+```bash
+export WEATHERGOV_SELF_IDENTIFICATION=you@example.com
+```
+
+Note: API reliability may vary.
+
+#### Climacell (tomorrow.io)
+
+1. Register at [Climacell](https://www.climacell.co/weather-api/)
+2. Add to env.sh:
+
+```bash
+export CLIMACELL_APIKEY=your_api_key
+```
+
+#### VisualCrossing
+
+1. Register at [VisualCrossing](https://www.visualcrossing.com/)
+2. Generate API key under Account Details
+3. Add to env.sh:
+
+```bash
+export VISUALCROSSING_APIKEY=your_api_key
+```
+
+#### SMHI (Sweden)
+
+Free service, requires identification:
+
+```bash
+export SMHI_SELF_IDENTIFICATION=you@example.com
+```
+
+### Severe Weather Alerts (Optional)
+
+Configure weather alert providers to display warnings:
+
+#### Met Office (UK)
+
+Get your region's RSS feed from the [Met Office RSS page](https://www.metoffice.gov.uk/weather/guides/rss):
+
+```bash
+export ALERT_METOFFICE_FEED_URL=https://www.metoffice.gov.uk/public/data/PWSCache/WarningsRSS/Region/se
+```
+
+#### Weather.gov (US)
+
+Uses your configured latitude/longitude:
+
+```bash
+export ALERT_WEATHERGOV_SELF_IDENTIFICATION=you@example.com
+```
+
+#### Met Éireann (Ireland)
+
+Choose your region's JSON file from https://www.met.ie/Open_Data/json/:
+
+```bash
+export ALERT_MET_EIREANN_FEED_URL=https://www.met.ie/Open_Data/json/warning_EI07.json
+```
+
+### Calendar Providers
+
+Choose one or more calendar/task providers:
+
+#### Todoist
+
+Popular task management with priority indicators:
+
+1. Get your API token from [Todoist Integrations](https://todoist.com/prefs/integrations)
+2. Add to env.sh:
+
+```bash
+export TODOIST_API_TOKEN=your_api_token
+```
+
+Features:
+- 🔴 P1 (urgent) tasks
+- 🟡 P2 (high priority) tasks
+- 🔵 P3 (medium priority) tasks
+- Sorted by due date
+- Tasks without dates appear as today's tasks
+
+See [TODOIST_SETUP.md](TODOIST_SETUP.md) for detailed instructions.
+
+#### Google Calendar
+
+1. Get your Calendar ID from [Google Calendar settings](https://calendar.google.com) (under "Integrate Calendar")
+2. Add to env.sh:
 
 ```bash
 export GOOGLE_CALENDAR_ID=xyz12345@group.calendar.google.com
 ```
 
-#### Get a Google Calendar token
+3. Run OAuth flow:
 
-You will need to run an Oauth process once manually to allow the Python code to get a token, which lets it query Google Calendar for information.
+```bash
+.venv/bin/python3 screen-calendar-get.py
+```
 
-Run:
+4. Follow the URL in your browser and log in
+5. When it redirects to localhost:8080, copy that URL
+6. In another SSH session, run:
 
-    .venv/bin/python3 screen-calendar-get.py
+```bash
+curl "http://localhost:8080/..."
+```
 
-The script will prompt you to visit a URL in your browser, then it will sit there and wait. The URL will look like `https://accounts.google.com/o/...` and will be very long.  
-
-Follow that URL in a browser window, you'll need to log in and choose your Google account.   
-On the "Make sure you trust Mendhak Waveshare Epaper Display" screen, you will see it's asking for permission to read your Google Calendar.  
-Click continue, and then let it fail when it tries to go to a `http://localhost:8080/...` URL.  
-
-Copy the URL it was trying to go to (eg: http://localhost:8080/...) and in another SSH session with the Raspberry Pi, run this (remember the double quotes): 
-
-    curl "http://localhost:8080/..."
-
-On the first screen you should see the auth flow complete, and a new `token.pickle` file appears.   
-The script should now be able to run in the future without prompting required.
+A `token.pickle` file will be created for future use.
 
 
-### Outlook Calendar
+#### Outlook Calendar
 
-The setup is much simpler, just run this script which will give instructions on how to login:
+1. Run the setup script:
 
-    .venv/bin/python3 outlook_util.py
+```bash
+.venv/bin/python3 outlook_util.py
+```
 
-Login with the Microsoft account you want to get the calendar from, and accept the consent screen.
-After a moment, the script will then display a set of Calendar IDs and some sample events from those Calendars.
-Copy the ID of the calendar you want, and add it to env.sh like so:
+2. Log in with your Microsoft account
+3. Copy the Calendar ID from the output
+4. Add to env.sh:
 
-    export OUTLOOK_CALENDAR_ID=AQMkAxyz...
+```bash
+export OUTLOOK_CALENDAR_ID=AQMkAxyz...
+```
 
-Note that if you set an Outlook Calendar ID, the Google Calendar will be ignored.
+#### ICS Calendar
 
-### ICS Calendar
+Simple URL-based calendar:
 
-ICS is simple, get the ICS URL for a calendar, and place it in `env.sh`.
+```bash
+export ICS_CALENDAR_URL=https://example.com/calendar.ics
+```
 
-    export ICS_CALENDAR_URL=https://calendar.google.com/calendar/ical/xxxxxxxxxxxx/xxxxxxxxxxxxxx/basic.ics
+#### CalDav Calendar
 
-There is no username/password support.
+For Nextcloud, ownCloud, etc.:
 
-### CalDav Calendar
+```bash
+export CALDAV_CALENDAR_URL=https://nextcloud.example.com/remote.php/dav/principals/users/123456/
+export CALDAV_USERNAME=username
+export CALDAV_PASSWORD=password
+```
 
-For CalDav you will need the CalDav URL, username, and password.
+Note: CalDav implementation varies by server.
 
-    export CALDAV_CALENDAR_URL=https://nextcloud.example.com/remote.php/dav/principals/users/123456/
-    export CALDAV_USERNAME=username
-    export CALDAV_PASSWORD=password
+### Display Options
 
-Some CalDav features may not work well as the protocol is heavily undocumented, proprietary, and many servers don't implement it the same way.
-
-## Pick a layout
-
-This is an optional step.  There are a few different layouts to choose from.
+#### Choose a Layout
 
 
-| `export SCREEN_LAYOUT=1` <br />This is the default | `export SCREEN_LAYOUT=2` <br />More calendar entries and less emphasis on weather and time |
+Set in env.sh:
+
+```bash
+export SCREEN_LAYOUT=1  # Default
+# export SCREEN_LAYOUT=2  # More calendar entries
+# export SCREEN_LAYOUT=3  # Calendar on left
+# export SCREEN_LAYOUT=4  # Hour display (color screens)
+# export SCREEN_LAYOUT=5  # With month calendar
+```
+
+| Layout 1 (Default) | Layout 2 (More Events) |
 | --- | --- |
 | [![Layout 1](screenshots/001.png)](screenshots/001.png) | [![Layout 2](screenshots/002.png)](screenshots/002.png) |
 
-| `export SCREEN_LAYOUT=3` <br />Calendar entries on left, less emphasis on weather | `export SCREEN_LAYOUT=4` <br />Shows hour instead of time. Meant for color screens. |
+| Layout 3 (Left Aligned) | Layout 4 (Color) |
 | --- | --- |
 | [![Layout 3](screenshots/003.png)](screenshots/003.png) | [![Layout 4](screenshots/004.png)](screenshots/004.png) |
 
-| `export SCREEN_LAYOUT=5` <br />Calendar entries on left, with a month calendar for at-a-glance |  |
+| Layout 5 (With Month) | |
 | --- | --- |
 | [![Layout 5](screenshots/005.png)](screenshots/005.png) | |
 
+## Running
 
+### Manual Run
 
+Test your configuration:
 
-## Run it
-
-Run `./run.sh` which should query the weather provider and Google/Outlook Calendar.  It will then create a png, convert to a 1-bit black and white bmp, then display the bmp on screen.
-
-Using a 1-bit, low grade BMP is what allows the screen to refresh relatively quickly. Calling the BCM code to do it takes about 6 seconds.
-Rendering a high quality PNG or JPG and rendering to screen with Python takes about 35 seconds.
-
-### Automate it
-
-Once you've proven that the run works, and an image is sent to your epaper display, you can automate it by setting up a cronjob.
-
-    crontab -e
-
-Add this entry so it runs every minute:
-
-    * * * * * cd /home/pi/waveshare-epaper-display && bash run.sh > run.log 2>&1
-
-This will cause the script to run every minute, and write the output as well as errors to the run.log file.
-
-Alternatively, you can use a systemd timer. There are example systemd units available to install a timer
-that starts a service every minute that runs the script. To achieve this, execute the following commands.
-
-    mkdir -p ~/.config/systemd/user/
-    cp waveshare-epaper-display.service.example ~/.config/systemd/user/waveshare-epaper-display.service
-    cp waveshare-epaper-display.timer.example ~/.config/systemd/user/waveshare-epaper-display.timer
-    systemctl --user daemon-reload
-    systemctl --user enable waveshare-epaper-display.timer
-    loginctl enable-linger
-
-## Custom Data
-
-This is an optional step, to add your own custom data to the screen.  For example this could be API calls, data from Home Assistant, PiHole stats, or something external.
-
-Rename `screen-custom-get.py.sample` to `screen-custom-get.py`. Do your custom code, and set the value of `custom_value_1` to the value you want to display. Run `./run.sh` and it'll appear on screen.
-
-Next, modify `screen-custom.svg` and change the various x, y, font size values to adjust its appearance and position.
-You can add more values by adding more SVG elements for custom_value_2, custom_value_3, and so on, and set its value in the `output_dict` in `screen-custom.get.py`.
-
-## How to use a different display language
-
-The default locale of the system will be used to generate the time and date formats, including month and day names.  On Raspberry Pi OS the default is usually `en_GB`.  
-
-Use the following instructions to install and try out other locales, or even force en_GB. 
-
-To see the current default locale, run `locale`.  
-To see all the locales installed on the system, use `locale -a`.  
-
-To install a new locale, go through the locale wizard:
-
-    sudo dpkg-reconfigure locales
-
-Select the locales you want to install, be sure to pick the ones that have `.UTF-8` in the name. 
-
-Edit the `env.sh` file and at the top, set the language like so: 
-
-    export LANG=ko_KR.UTF-8
-
-The next time `run.sh` runs, the output should have the chosen language.
-
-### Fonts for non-western languages
-
-Some languages may not render well because the default Raspberry Pi system fonts don't have all the characters needed to display on screen. For such cases, you'll need to find and install a font that supports all the characters you want to display. 
-
-Chinese/Japanese/Korean should already be taken care of by installing the `fonts-noto` package. But sometimes just installing that isn't enough, you'll also have to set it as the default font, see the [font instructions](#how-to-use-a-different-font). 
-
-The reason this is necessary: the SVG renderer [does not support fallback fonts](https://github.com/Kozea/CairoSVG/issues/72#issuecomment-132500219) which means that if a font doesn't have a certain character, it won't ask the system for other fonts to help plug the gaps. You'll just see squares. 
-
-
-## How to use a different font
-
-The default font is set to `sans-serif` which on a Raspberry Pi defaults to DejaVu Sans. It's a decent font, wide, and visible, and works for most western languages.  
-
-In this example I'll replace it with Noto Sans. 
-First run this command, it will show the current font being used. 
-
-```
-$ fc-match sans-serif
-DejaVuSans.ttf: "DejaVu Sans" "Book"
+```bash
+./run.sh
 ```
 
-Install Noto fonts.
+This will:
+1. Fetch weather data
+2. Fetch calendar/task data
+3. Generate a PNG image
+4. Convert to 1-bit BMP (for fast refresh)
+5. Display on the e-paper screen
 
+### Automation
+
+#### Option 1: Cron Job
+
+```bash
+crontab -e
 ```
+
+Add this line to run every minute:
+
+```bash
+* * * * * cd /home/pi/waveshare-epaper-display && bash run.sh > run.log 2>&1
+```
+
+#### Option 2: Systemd Timer
+
+```bash
+mkdir -p ~/.config/systemd/user/
+cp waveshare-epaper-display.service.example ~/.config/systemd/user/waveshare-epaper-display.service
+cp waveshare-epaper-display.timer.example ~/.config/systemd/user/waveshare-epaper-display.timer
+systemctl --user daemon-reload
+systemctl --user enable waveshare-epaper-display.timer
+loginctl enable-linger
+```
+
+## Advanced Features
+
+### Custom Data
+
+Add your own data to the display (API calls, Home Assistant, PiHole stats, etc.):
+
+1. Rename `screen-custom-get.py.sample` to `screen-custom-get.py`
+2. Add your custom code and set `custom_value_1`
+3. Modify `screen-custom.svg` to adjust appearance
+4. Run `./run.sh`
+
+### Language Support
+
+The system locale determines date/time formats. Default is usually `en_GB`.
+
+Check current locale:
+
+```bash
+locale
+locale -a  # See installed locales
+```
+
+Install new locales:
+
+```bash
+sudo dpkg-reconfigure locales
+```
+
+Set in env.sh:
+
+```bash
+export LANG=ko_KR.UTF-8
+```
+
+#### Non-Western Languages
+
+For Chinese/Japanese/Korean, install Noto fonts (already in setup). If characters don't display, set Noto as default font (see below).
+
+### Custom Fonts
+
+Default font is DejaVu Sans. To change to Noto Sans:
+
+1. Check current font:
+
+```bash
+fc-match sans-serif
+```
+
+2. Install Noto fonts:
+
+```bash
 sudo apt install fonts-noto
 ```
 
-Now create a font config file if it doesn't already exist. 
+3. Create font config:
 
-```
+```bash
 mkdir -p ~/.config/fontconfig/conf.d
 nano ~/.config/fontconfig/conf.d/00-fonts.conf
 ```
 
-Set the contents of the 00-fonts.conf file:
+4. Add this content:
 
 ```xml
 <?xml version='1.0'?>
@@ -430,21 +496,23 @@ Set the contents of the 00-fonts.conf file:
 </fontconfig>
 ```
 
-This tells the system to prefer 'Noto Sans' if the 'sans-serif' family is requested. You can test it by running:
+5. Verify:
 
+```bash
+fc-match sans-serif
 ```
-$ fc-match sans-serif
-NotoSans-Regular.ttf: "Noto Sans" "Regular"
+
+### Privacy Mode
+
+Hide all personal information and display either XKCD comics or literary quotes:
+
+```bash
+export PRIVACY_MODE_XKCD=1  # Show XKCD comic
+# OR
+export PRIVACY_MODE_LITERATURE_CLOCK=1  # Show time as literature quote
 ```
 
-The next time `run.sh` runs, the output image should have the chosen font.
-
-## Privacy Mode
-
-This mode hides away everything and just displays an XKCD comic or a literary quote for the time.  In env.sh, set: 
-
-
-| `export PRIVACY_MODE_XKCD=1` <br />XKCD comic | `export PRIVACY_MODE_LITERATURE_CLOCK=1` <br />Literature clock mode |
+| XKCD Mode | Literature Clock |
 | --- | --- |
 | [![XKCD](screenshots/pvt_xkcd.png)](screenshots/pvt_xkcd.png) | [![Literature](screenshots/pvt_literature.png)](screenshots/pvt_literature.png) |
 
@@ -452,53 +520,84 @@ This mode hides away everything and just displays an XKCD comic or a literary qu
 
 ## Troubleshooting
 
-If the scripts don't work at all, try going through the Waveshare sample code linked below - if you can get those working, this script should work for you too.
-
-You may want to further troubleshoot if you're seeing or not seeing something expected.
-If you've set up the cron job as shown above, a `run.log` file will appear which contains some info and errors.
-If there isn't enough information in there, you can set `export LOG_LEVEL=DEBUG` in the `env.sh` and the `run.log` will contain even more information.
-
-The scripts cache the calendar and weather information, to avoid hitting weather API rate limits.
-If you want to force a weather update, you can delete the `cache_weather.json`.
-If you want to force a calendar update, you can delete the `cache_calendar.pickle` or `cache_outlookcalendar.pickle`.
-If you want to force a re-login to Google or Outlook, delete the `token.pickle` or `outlooktoken.bin`.
-
-
-## Waveshare documentation and sample code
-
-Waveshare have a [user manual](https://www.waveshare.com/w/upload/7/74/7.5inch-e-paper-hat-user-manual-en.pdf) which you can get to from [their Wiki](https://www.waveshare.com/wiki/7.5inch_e-Paper_HAT)
-
-
-The [Waveshare demo repo is here](https://github.com/waveshare/e-Paper).  Assuming all dependencies are installed, these demos should work.
-
-    git clone https://github.com/waveshare/e-Paper
-    cd e-Paper
-
-
-This is the best place to start for troubleshooting - try to make sure the examples given in their repo works for you.
-
-[Readme for the C demo](https://github.com/waveshare/e-Paper/blob/master/RaspberryPi_JetsonNano/c/readme_EN.txt)
-
-[Readme for the Python demo](https://github.com/waveshare/e-Paper/blob/master/RaspberryPi_JetsonNano/python/readme_jetson_EN.txt)
-
-
-## Debugging locally
-
-It's possible to run and debug the application locally with virtual environments.  The last step fails, as it's trying to write to GPIO, but that's not an issue since the aim of local development is to generate and view the `screen-output.png`.
-
-Do this before opening VSCode:
+### Check Logs
 
 ```bash
-# Generate the virtual environment directory
+tail -f run.log
+```
+
+Enable debug logging in env.sh:
+
+```bash
+export LOG_LEVEL=DEBUG
+```
+
+### Clear Cache
+
+Force fresh data by deleting cache files:
+
+```bash
+rm cache_weather.json
+rm cache_todoist.pickle
+rm cache_calendar.pickle
+rm cache_outlookcalendar.pickle
+```
+
+### Re-authenticate
+
+Delete token files to force re-login:
+
+```bash
+rm token.pickle  # Google
+rm outlooktoken.bin  # Outlook
+```
+
+### Test Waveshare Display
+
+If nothing works, test with Waveshare's official examples:
+
+```bash
+git clone https://github.com/waveshare/e-Paper
+cd e-Paper
+```
+
+See [Waveshare Wiki](https://www.waveshare.com/wiki/7.5inch_e-Paper_HAT) and [user manual](https://www.waveshare.com/w/upload/7/74/7.5inch-e-paper-hat-user-manual-en.pdf).
+
+## Development
+
+### Local Debugging
+
+Run and debug locally without a Raspberry Pi. The GPIO write will fail, but you can view the generated `screen-output.png`.
+
+Setup:
+
+```bash
 python3 -m venv .venv
-# Switch to it
 source .venv/bin/activate
-# Install dependencies
 pip install -r requirements.txt
 ```
 
-Then, open VSCode with the project, and it should automatically detect and switch to the virtual environment in the terminal.
+Run:
 
-To run the project, just run `./run.sh`.  It will pick up env.sh variables, and run the various Python scripts.
+```bash
+./run.sh
+```
 
-To debug the project, open a Python script file such as `screen-calendar-get.py` or `screen-weather-get.py`, and press F5.  It will generate a .env from env.sh, and run the script.  It can hit breakpoints, no problem.
+Debug in VSCode:
+1. Open a Python file (e.g., `screen-calendar-get.py`)
+2. Press F5
+3. Set breakpoints as needed
+
+## Additional Documentation
+
+- [Web Interface Guide](WEB_INTERFACE_GUIDE.md) - Complete web UI documentation
+- [Todoist Setup](TODOIST_SETUP.md) - Detailed Todoist integration guide
+- [Changelog](CHANGELOG.md) - Version history and updates
+
+## Contributing
+
+Contributions welcome! Please open an issue or pull request on GitHub.
+
+## License
+
+See [LICENSE](LICENSE) file for details.

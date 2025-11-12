@@ -83,7 +83,7 @@ See [WEB_INTERFACE_GUIDE.md](WEB_INTERFACE_GUIDE.md) for detailed instructions.
 cd ~
 sudo apt update && sudo apt upgrade
 sudo apt install git
-git clone --recursive https://github.com/mendhak/waveshare-epaper-display.git
+git clone --recursive https://github.com/ravi/waveshare-epaper-display.git
 cd waveshare-epaper-display
 
 # Install dependencies
@@ -593,6 +593,10 @@ Debug in VSCode:
 - [Web Interface Guide](WEB_INTERFACE_GUIDE.md) - Complete web UI documentation
 - [Todoist Setup](TODOIST_SETUP.md) - Detailed Todoist integration guide
 - [Changelog](CHANGELOG.md) - Version history and updates
+
+## Author
+
+Created and maintained by **Ravi**.
 
 ## Contributing
 

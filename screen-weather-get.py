@@ -1,4 +1,8 @@
 #!/usr/bin/python
+"""
+Waveshare ePaper Display - Weather Module
+Author: Ravi
+"""
 
 import datetime
 import sys

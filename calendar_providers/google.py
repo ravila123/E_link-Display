@@ -1,3 +1,8 @@
+"""
+Waveshare ePaper Display - Google Calendar Provider
+Author: Ravi
+"""
+
 import datetime
 from calendar_providers.base_provider import BaseCalendarProvider, CalendarEvent
 from utility import is_stale, xor_decode

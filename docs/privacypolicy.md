@@ -10,5 +10,5 @@ Waveshare Epaper Display does not collect or send to any third-parties, any pers
 
 When Waveshare Epaper Display connects to your weather, alerts, or calendar providers, it is specifically to fetch the relevant weather, alert, or calendar information, and display the information on the screen. The connection occurs using the configuration that you provide for those respective provider services. This information is not collected in any way by us. 
 
-If you have any questions about this Privacy Policy, please contact us. You can use Github Issues or email gpslogger at mendhak.com.
+If you have any questions about this Privacy Policy, please contact us via GitHub Issues.
 

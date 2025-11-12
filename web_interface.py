@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """
-Web interface for managing Waveshare E-Paper Display configuration
+Waveshare E-Paper Display - Web Configuration Interface
+Author: Ravi
+
 Run with: python3 web_interface.py
 Access at: http://raspberrypi.local:5000
 """
@@ -168,4 +170,4 @@ if __name__ == '__main__':
         subprocess.run(['cp', ENV_SAMPLE, ENV_FILE])
     
     # Run on all interfaces so it's accessible from other devices
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5001, debug=True)

@@ -1,4 +1,9 @@
 #!/usr/bin/python3
+"""
+Waveshare ePaper Display - Display Driver Module
+Author: Ravi
+"""
+
 import sys
 import os
 import logging

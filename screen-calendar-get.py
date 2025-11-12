@@ -1,3 +1,8 @@
+"""
+Waveshare ePaper Display - Calendar Module
+Author: Ravi
+"""
+
 import datetime
 import os.path
 import os

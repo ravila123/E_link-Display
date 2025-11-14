@@ -35,9 +35,9 @@ else
         exit 1
     fi
 
-    log "Add Calendar info"
+    log "Add Todoist tasks"
     if ! .venv/bin/python3 screen-calendar-get.py; then
-        log "⚠️Error getting calendar info, stopping."
+        log "⚠️Error getting Todoist tasks, stopping."
         exit 1
     fi
 

@@ -26,16 +26,29 @@ ttl = float(os.getenv("CALENDAR_TTL", 1 * 60 * 60))
 
 def get_formatted_calendar_events(fetched_events: list[CalendarEvent]) -> dict:
     formatted_events = {}
-    event_count = len(fetched_events)
+    
+    # Filter to only show today's tasks
+    today = datetime.date.today()
+    today_tasks = []
+    
+    for event in fetched_events:
+        event_date = event.start
+        if isinstance(event_date, datetime.datetime):
+            event_date = event_date.date()
+        
+        # Include tasks with today's date or no date (which default to today)
+        if event_date == today:
+            today_tasks.append(event)
+    
+    logging.info(f"Filtered to {len(today_tasks)} tasks for today")
+    event_count = len(today_tasks)
 
     for index in range(max_event_results):
         event_label_id = str(index + 1)
         if index <= event_count - 1:
-            formatted_events['CAL_DATETIME_' + event_label_id] = get_datetime_formatted(fetched_events[index].start, fetched_events[index].end, fetched_events[index].all_day_event)
-            formatted_events['CAL_DATETIME_START_' + event_label_id] = get_datetime_formatted(fetched_events[index].start, fetched_events[index].end, fetched_events[index].all_day_event, True)
-            formatted_events['CAL_DESC_' + event_label_id] = fetched_events[index].summary
+            # Only show task description, no datetime
+            formatted_events['CAL_DESC_' + event_label_id] = today_tasks[index].summary
         else:
-            formatted_events['CAL_DATETIME_' + event_label_id] = ""
             formatted_events['CAL_DESC_' + event_label_id] = ""
 
     return formatted_events

@@ -1,19 +1,17 @@
-# Waveshare ePaper Display
+# Waveshare ePaper Display - Todoist To-Do List
 
-A feature-rich dashboard for Raspberry Pi with Waveshare 7.5" ePaper display. Shows weather, calendar events, tasks, and more on a beautiful e-ink screen.
+A streamlined dashboard for Raspberry Pi with Waveshare 7.5" ePaper display. Shows your Todoist tasks with weather on a beautiful e-ink screen.
 
 
 ## Features
 
-- Multiple weather providers (OpenWeatherMap, Met Office, AccuWeather, and more)
-- Calendar integration (Google, Outlook, Todoist, ICS, CalDav)
-- Task management with Todoist
-- Web interface for easy configuration
-- Multiple layout options
-- Privacy modes (XKCD comics, literature clock)
-- Severe weather alerts
-- Multi-language support
-- Customizable fonts and data  
+- **Todoist Integration** - Display your to-do list with priority indicators (🔴🟡🔵)
+- **Weather Providers** - Multiple options (Met.no free, OpenWeatherMap, and more)
+- **Web Interface** - Easy configuration through browser
+- **Multiple Layouts** - Choose from 5 different display layouts
+- **Priority Indicators** - Visual priority markers for tasks
+- **Due Date Display** - See when tasks are due
+- **Auto-refresh** - Configurable cache and update intervals  
 
 ## Table of Contents
 

@@ -1,5 +1,5 @@
 """
-Waveshare ePaper Display - Calendar Module
+Waveshare ePaper Display - Todoist To-Do List Module
 Author: Ravi
 """
 
@@ -10,10 +10,6 @@ import logging
 import emoji
 from xml.sax.saxutils import escape
 from calendar_providers.base_provider import CalendarEvent
-from calendar_providers.caldav import CalDavCalendar
-from calendar_providers.google import GoogleCalendar
-from calendar_providers.ics import ICSCalendar
-from calendar_providers.outlook import OutlookCalendar
 from calendar_providers.todoist import TodoistCalendar
 from utility import get_formatted_time, update_svg, configure_logging, get_formatted_date, configure_locale
 
@@ -22,16 +18,6 @@ configure_logging()
 
 # note: increasing this will require updates to the SVG template to accommodate more events
 max_event_results = 10
-
-google_calendar_id = os.getenv("GOOGLE_CALENDAR_ID", "primary")
-outlook_calendar_id = os.getenv("OUTLOOK_CALENDAR_ID", None)
-
-caldav_calendar_url = os.getenv('CALDAV_CALENDAR_URL', None)
-caldav_username = os.getenv("CALDAV_USERNAME", None)
-caldav_password = os.getenv("CALDAV_PASSWORD", None)
-caldav_calendar_id = os.getenv("CALDAV_CALENDAR_ID", None)
-
-ics_calendar_url = os.getenv("ICS_CALENDAR_URL", None)
 
 todoist_api_token = os.getenv("TODOIST_API_TOKEN", None)
 
@@ -92,23 +78,12 @@ def main():
     oneyearlater_iso = (datetime.datetime.now().astimezone()
                         + datetime.timedelta(days=365)).astimezone()
 
-    if todoist_api_token:
-        logging.info("Fetching Todoist Tasks")
-        provider = TodoistCalendar(todoist_api_token, max_event_results, today_start_time, oneyearlater_iso)
-    elif outlook_calendar_id:
-        logging.info("Fetching Outlook Calendar Events")
-        provider = OutlookCalendar(outlook_calendar_id, max_event_results, today_start_time, oneyearlater_iso)
-    elif caldav_calendar_url:
-        logging.info("Fetching Caldav Calendar Events")
-        provider = CalDavCalendar(caldav_calendar_url, caldav_calendar_id, max_event_results,
-                                  today_start_time, oneyearlater_iso, caldav_username, caldav_password)
-    elif ics_calendar_url:
-        logging.info("Fetching ics Calendar Events")
-        provider = ICSCalendar(ics_calendar_url, max_event_results, today_start_time, oneyearlater_iso)
-    else:
-        logging.info("Fetching Google Calendar Events")
-        provider = GoogleCalendar(google_calendar_id, max_event_results, today_start_time, oneyearlater_iso)
+    if not todoist_api_token:
+        logging.error("TODOIST_API_TOKEN not set! Please configure your Todoist API token in env.sh")
+        raise ValueError("TODOIST_API_TOKEN environment variable is required")
 
+    logging.info("Fetching Todoist Tasks")
+    provider = TodoistCalendar(todoist_api_token, max_event_results, today_start_time, oneyearlater_iso)
     calendar_events = provider.get_calendar_events()
     output_dict = get_formatted_calendar_events(calendar_events)
 

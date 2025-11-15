@@ -45,6 +45,9 @@
 
     <text id="texttime" x="20" y="125" font-size="TIME_NOW_FONT_SIZE" style="font-weight:bold;line-height:0%;font-family:sans-serif;text-anchor:beginning">TIME_NOW</text>
 
+    <!-- Affirmation at bottom -->
+    <text id="affirmation" x="400" y="470" font-size="22px" style="font-size:22px;font-style:italic;line-height:0%;font-family:sans-serif;text-anchor:middle;fill:#666666">AFFIRMATION_TEXT</text>
+
     <use id="customdata" href="screen-output-custom-temp.svg" />
 
 </svg>

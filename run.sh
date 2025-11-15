@@ -41,6 +41,11 @@ else
         exit 1
     fi
 
+    log "Add daily affirmation"
+    if ! .venv/bin/python3 screen-affirmation-get.py; then
+        log "⚠️Error getting affirmation, continuing anyway."
+    fi
+
     # Only layout 5 shows a calendar, so save a few seconds.
     if [[ "$SCREEN_LAYOUT" -eq 5 ]]; then
         log "Add Calendar month"

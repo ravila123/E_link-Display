@@ -40,35 +40,32 @@ class TodoistCalendar(BaseCalendarProvider):
                 logging.debug(f"Fetched {len(tasks)} tasks from Todoist")
 
                 # Convert Todoist tasks to CalendarEvent objects
-                for task in tasks[:self.max_event_results]:
+                for task in tasks:
                     summary = task.get('content', 'Untitled Task')
                     
-                    # Handle due date
+                    # Handle due date - ONLY include tasks with actual due dates
                     due = task.get('due')
-                    if due:
-                        due_date_str = due.get('date')
-                        due_datetime = due.get('datetime')
-                        
-                        if due_datetime:
-                            # Task has specific time
-                            start_date = datetime.datetime.fromisoformat(due_datetime.replace('Z', '+00:00'))
-                            end_date = start_date + datetime.timedelta(hours=1)  # Default 1 hour duration
-                            is_all_day = False
-                        elif due_date_str:
-                            # Task has only date (all-day)
-                            start_date = datetime.datetime.strptime(due_date_str, "%Y-%m-%d").date()
-                            end_date = start_date
-                            is_all_day = True
-                        else:
-                            # No due date, use today
-                            start_date = datetime.datetime.now().date()
-                            end_date = start_date
-                            is_all_day = True
-                    else:
-                        # No due date, use today
-                        start_date = datetime.datetime.now().date()
+                    if not due:
+                        # Skip tasks without due dates
+                        logging.debug(f"Skipping task without due date: {summary}")
+                        continue
+                    
+                    due_date_str = due.get('date')
+                    due_datetime = due.get('datetime')
+                    
+                    if due_datetime:
+                        # Task has specific time
+                        start_date = datetime.datetime.fromisoformat(due_datetime.replace('Z', '+00:00'))
+                        end_date = start_date + datetime.timedelta(hours=1)  # Default 1 hour duration
+                        is_all_day = False
+                    elif due_date_str:
+                        # Task has only date (all-day)
+                        start_date = datetime.datetime.strptime(due_date_str, "%Y-%m-%d").date()
                         end_date = start_date
                         is_all_day = True
+                    else:
+                        # No valid date info, skip
+                        continue
 
                     # Add priority indicator to summary
                     priority = task.get('priority', 1)
@@ -80,6 +77,10 @@ class TodoistCalendar(BaseCalendarProvider):
                         summary = "🔵 " + summary  # P3 - Medium
 
                     calendar_events.append(CalendarEvent(summary, start_date, end_date, is_all_day))
+                    
+                    # Stop if we have enough tasks
+                    if len(calendar_events) >= self.max_event_results:
+                        break
 
                 # Sort by due date - convert dates to datetime for comparison
                 def sort_key(event):

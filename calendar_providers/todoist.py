@@ -46,13 +46,15 @@ class TodoistCalendar(BaseCalendarProvider):
 
             logging.debug(f"Fetched {len(tasks)} tasks from Todoist")
 
+            # Get today's date for filtering
+            today = datetime.date.today()
+            
             for task in tasks:
                 summary = task.get("content", "Untitled Task")
 
                 # Only include tasks that have a due date
                 due = task.get("due")
                 if not due:
-                    logging.debug(f"Skipping task without due date: {summary}")
                     continue
 
                 due_date_str = due.get("date")
@@ -60,50 +62,27 @@ class TodoistCalendar(BaseCalendarProvider):
 
                 # Convert Todoist due fields into Python date/datetime
                 is_all_day = False
+                task_date = None
 
                 if due_datetime:
-                    # Example: "2025-11-20T18:30:00Z"
+                    # Task has specific time
                     start = datetime.datetime.fromisoformat(
                         due_datetime.replace("Z", "+00:00")
                     )
                     end = start + datetime.timedelta(hours=1)
+                    task_date = start.date()
                 elif due_date_str:
-                    # All–day task
+                    # All-day task
                     start = datetime.datetime.strptime(due_date_str, "%Y-%m-%d").date()
                     end = start
                     is_all_day = True
+                    task_date = start
                 else:
-                    # No usable date object
                     continue
 
-                # Optional: respect from_date / to_date if provided
-                try:
-                    if isinstance(self.from_date, datetime.date):
-                        # Normalize event start to datetime for comparison
-                        if isinstance(start, datetime.date) and not isinstance(start, datetime.datetime):
-                            start_cmp = datetime.datetime.combine(start, datetime.time.min)
-                        else:
-                            start_cmp = start
-
-                        from_cmp = (
-                            datetime.datetime.combine(self.from_date, datetime.time.min)
-                            if isinstance(self.from_date, datetime.date) and not isinstance(self.from_date, datetime.datetime)
-                            else self.from_date
-                        )
-                        to_cmp = (
-                            datetime.datetime.combine(self.to_date, datetime.time.max)
-                            if isinstance(self.to_date, datetime.date) and not isinstance(self.to_date, datetime.datetime)
-                            else self.to_date
-                        )
-
-                        logging.debug(f"Task '{summary}': start={start_cmp}, from={from_cmp}, to={to_cmp}")
-                        
-                        if start_cmp < from_cmp or start_cmp > to_cmp:
-                            # Outside desired window
-                            logging.debug(f"Task '{summary}' outside date range, skipping")
-                            continue
-                except Exception as e:
-                    logging.debug(f"Date range filtering error (ignored): {e}")
+                # Only show tasks due today
+                if task_date != today:
+                    continue
 
                 # Add priority emoji
                 priority = task.get("priority", 1)

@@ -7,41 +7,41 @@
     </g>
 
     <text id="alertmessage" x="0" y="35" font-size="30px" style="font-weight:bold;font-size:30px;line-height:0%;font-family:'Nimbus Mono PS',monospace;text-anchor:beginning">ALERT_MESSAGE</text>
-    <text id="temphighlow" x="155" y="360" font-size="38px" style="font-size:38px;line-height:0%;font-family:sans-serif;text-anchor:middle">HIGH_ONE/LOW_ONE</text>
-    <text id="weatherdesc1" x="155" y="390" font-size="38px" style="font-size:28px;line-height:0%;font-family:sans-serif;text-anchor:middle">WEATHER_DESC_1</text>
-    <text id="weaetherdesc2" x="155" y="415" font-size="38px" style="font-size:28px;line-height:0%;font-family:sans-serif;text-anchor:middle">WEATHER_DESC_2</text>
-    <path d="m 301.08466,394.8254 v 70 h 3 v -235.5 h -3 z" id="divider" inkscape:connector-curvature="0" />
+    <text id="temphighlow" x="650" y="160" font-size="38px" style="font-size:38px;line-height:0%;font-family:cursive;text-anchor:middle">HIGH_ONE/LOW_ONE</text>
+    <text id="weatherdesc1" x="650" y="185" font-size="38px" style="font-size:28px;line-height:0%;font-family:cursive;text-anchor:middle">WEATHER_DESC_1</text>
+    <text id="weaetherdesc2" x="650" y="415" font-size="38px" style="font-size:28px;line-height:0%;font-family:cursive;text-anchor:middle">WEATHER_DESC_2</text>
+<!-->    <path d="m 301.08466,394.8254 v 70 h 3 v -235.5 h -3 z" id="divider" inkscape:connector-curvature="0" />  -->
 
-    <text id="taskslabel" x="330" y="200" font-size="35px" style="font-weight:bold;font-size:35px;line-height:0%;font-family:sans-serif;text-anchor:beginning">✓ Tasks:</text>
+    <text id="taskslabel" x="100" y="200" font-size="35px" style="font-weight:bold;font-size:35px;line-height:0%;font-family:cursive;text-anchor:beginning">✓ Tasks:</text>
 
-    <text id="calendarentry1" x="330" y="245" font-size="28px" style="font-size:28px;line-height:0%;font-family:sans-serif;text-anchor:beginning">
+    <text id="calendarentry1" x="100" y="245" font-size="28px" style="font-size:28px;line-height:0%;font-family:cursive;text-anchor:beginning">
         <tspan style="font-weight:bold;" x="330" dy="0">CAL_DESC_1</tspan>
     </text>
 
-    <text id="calendarentry2" x="330" y="285" font-size="28px" style="font-size:28px;line-height:0%;font-family:sans-serif;text-anchor:beginning">
+    <text id="calendarentry2" x="100" y="285" font-size="28px" style="font-size:28px;line-height:0%;font-family:cursive;text-anchor:beginning">
         <tspan style="font-weight:bold;" x="330" dy="0">CAL_DESC_2</tspan>
     </text>
 
-    <text id="calendarentry3" x="330" y="325" font-size="28px" style="font-size:28px;line-height:0%;font-family:sans-serif;text-anchor:beginning">
+    <text id="calendarentry3" x="100" y="325" font-size="28px" style="font-size:28px;line-height:0%;font-family:cursive;text-anchor:beginning">
         <tspan style="font-weight:bold;" x="330" dy="0">CAL_DESC_3</tspan>
     </text>
 
-    <text id="calendarentry4" x="330" y="365" font-size="28px" style="font-size:28px;line-height:0%;font-family:sans-serif;text-anchor:beginning">
+    <text id="calendarentry4" x="100" y="365" font-size="28px" style="font-size:28px;line-height:0%;font-family:cursive;text-anchor:beginning">
         <tspan style="font-weight:bold;" x="330" dy="0">CAL_DESC_4</tspan>
     </text>
 
-    <text id="calendarentry5" x="330" y="405" font-size="28px" style="font-size:28px;line-height:0%;font-family:sans-serif;text-anchor:beginning">
+    <text id="calendarentry5" x="100" y="405" font-size="28px" style="font-size:28px;line-height:0%;font-family:cursive;text-anchor:beginning">
         <tspan style="font-weight:bold;" x="330" dy="0">CAL_DESC_5</tspan>
     </text>
 
-    <text id="calendarentry6" x="330" y="445" font-size="28px" style="font-size:28px;line-height:0%;font-family:sans-serif;text-anchor:beginning">
+    <text id="calendarentry6" x="100" y="445" font-size="28px" style="font-size:28px;line-height:0%;font-family:cursive;text-anchor:beginning">
         <tspan style="font-weight:bold;" x="330" dy="0">CAL_DESC_6</tspan>
     </text>
 
 
-    <text id="textday" x="600" y="75" style="text-anchor:middle;font-weight:600;font-size:47px;line-height:0%;font-family:sans-serif;">DAY_NAME</text>
+    <text id="textday" x="700" y="75" style="text-anchor:middle;font-weight:600;font-size:47px;line-height:0%;font-family:sans-serif;">DAY_NAME</text>
 
-    <text id="textdate" x="600" y="130" style="text-anchor:middle;font-size:40px;line-height:0%;font-family:sans-serif;">DAY_ONE</text>
+    <text id="textdate" x="650" y="130" style="text-anchor:middle;font-size:40px;line-height:0%;font-family:sans-serif;">DAY_ONE</text>
 
     <text id="texttime" x="20" y="125" font-size="TIME_NOW_FONT_SIZE" style="font-weight:bold;line-height:0%;font-family:sans-serif;text-anchor:beginning">TIME_NOW</text>
 

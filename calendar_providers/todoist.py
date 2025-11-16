@@ -96,8 +96,11 @@ class TodoistCalendar(BaseCalendarProvider):
                             else self.to_date
                         )
 
+                        logging.debug(f"Task '{summary}': start={start_cmp}, from={from_cmp}, to={to_cmp}")
+                        
                         if start_cmp < from_cmp or start_cmp > to_cmp:
                             # Outside desired window
+                            logging.debug(f"Task '{summary}' outside date range, skipping")
                             continue
                 except Exception as e:
                     logging.debug(f"Date range filtering error (ignored): {e}")
